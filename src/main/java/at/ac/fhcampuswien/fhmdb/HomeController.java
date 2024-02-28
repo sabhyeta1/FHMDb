@@ -54,16 +54,17 @@ public class HomeController implements Initializable {
         sortBtn.setOnAction(actionEvent -> {
             if(sortBtn.getText().equals("Sort (asc)")) {
                 // TODO sort observableMovies ascending
+                observableMovies.clear();
+                observableMovies.addAll(Movie.sortListAlphabetically(allMovies,true));
                 sortBtn.setText("Sort (desc)");
             } else {
                 // TODO sort observableMovies descending
+                observableMovies.clear();
+                observableMovies.addAll(Movie.sortListAlphabetically(allMovies,false));
                 sortBtn.setText("Sort (asc)");
             }
         });
 
 
-    }
-
-    public void sortAlphabetically(MouseEvent mouseEvent) {
     }
 }
