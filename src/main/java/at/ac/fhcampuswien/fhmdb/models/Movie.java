@@ -1,9 +1,6 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Movie {
     private String title;
@@ -52,10 +49,20 @@ public class Movie {
 
 
 
-
-
-
         return movies;
+    }
+
+    public static List<String> sortListAlphabetically(List<Movie> movieList, boolean swap) {
+        List<String> titleList = new ArrayList<>();
+        List<Movie> sortedMovie = new ArrayList<>();
+        for (int i = 0; i < movieList.size(); i++) {
+            titleList.add(movieList.get(i).getTitle());
+        }
+        if (swap) {
+            Collections.sort(titleList);
+        } else titleList.sort(Comparator.reverseOrder());
+
+        return titleList;
     }
 
     @Override

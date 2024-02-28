@@ -42,5 +42,11 @@ class MovieTest {
 
 
     }
+
+    @Test
+    void sortListAlphabetically() {
+        List<Movie> movies = Movie.initializeMovies();
+        System.out.println(Movie.sortListAlphabetically(movies, false));
+    }
 }
 
