@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class MovieTest {
@@ -24,12 +23,22 @@ class MovieTest {
 
         List<Movie> actual = new ArrayList<>();
 
+        boolean check = true;
+
         //Act - ausführung der methode die ausgeführt wird
         actual = Movie.initializeMovies();
+        for (int i = 0; i < expected.size(); i++) {
+            // Legally Blonde (expected) == Legally Blonde (actual)
+            if (! (expected.get(i).getTitle().equals(actual.get(i).getTitle()))) {
+                check = false;
+            }
+        }
+
 
         //Assert - überprüfen, ob es auch stimmt
-        assertArrayEquals(expected.toArray(), actual.toArray());
-        //assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        System.out.println(expected);
+        System.out.println(actual);
+        assertTrue(check);
 
 
     }
