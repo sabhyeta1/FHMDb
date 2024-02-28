@@ -28,6 +28,16 @@ public class Movie {
         return description;
     }
 
+    public String getGenres() { // ADVENTUREDRAMA ->  DRAMA, ROMANCE;
+        StringBuilder s = new StringBuilder();
+        for (Genre genre : genres) {
+            s.append(genre).append(", ");
+
+        }
+        s.delete(s.length() - 2, s.length());
+        return s.toString();
+    }
+
     public static List<Movie> initializeMovies(){
         List<Movie> movies = new ArrayList<>();
         movies.add(new Movie("Legally Blonde", "Elle Woods, a fashionable sorority queen, is dumped by her boyfriend. She decides to follow him to law school. While there, she figures out that there is more to her than just looks.", Arrays.asList(Genre.COMEDY)));
@@ -50,10 +60,9 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Movie{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", genres=" + genres +
-                '}';
+        return "{" + title +
+                "," + description +
+                ", " + genres.toString() + "}";
     }
+
 }
