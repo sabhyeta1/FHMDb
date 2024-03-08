@@ -75,6 +75,22 @@ public class Movie {
         return sortedMovie;
     }
 
+    public static List<Movie> filterMovieListByGenres(List<Movie>movieList, Genre genre){
+        try {
+            genre.toString();
+        } catch (NullPointerException e){
+            return movieList;
+        }
+
+        List<Movie>filteredMovieGenreList = new ArrayList<>();
+        for (int i=0;i< movieList.size();i++){
+            if (movieList.get(i).getGenres().contains(genre.toString())){
+                filteredMovieGenreList.add(movieList.get(i));
+            }
+        }
+        return filteredMovieGenreList;
+    }
+
     @Override
     public String toString() {
         return "{" + title +
@@ -82,4 +98,16 @@ public class Movie {
                 ", " + genres.toString() + "}\n";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return Objects.equals(title, movie.title) && Objects.equals(description, movie.description) && Objects.equals(genres, movie.genres);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, genres);
+    }
 }

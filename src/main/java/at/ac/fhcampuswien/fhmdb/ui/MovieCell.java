@@ -17,6 +17,7 @@ public class MovieCell extends ListCell<Movie> {
     @Override
     protected void updateItem(Movie movie, boolean empty) {
         super.updateItem(movie, empty);
+        setGraphic(null);
 
         if (empty || movie == null) {
             setText(null);

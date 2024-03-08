@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -93,5 +94,75 @@ class MovieTest {
         System.out.println(expected+"\n"+actual);
         assertTrue(checker);
     }
+
+    @Test
+    void check_if_movie_list_is_correctly_filtered_by_genre() {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+
+        expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
+        expected.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
+        //Act
+        actual=Movie.filterMovieListByGenres(movieList, Genre.ACTION);
+
+        //Assert
+
+        assertEquals(expected,actual);
+
+    }
+    @Test
+    void check_if_movie_list_is_returned_correctly_if_there_is_no_filter() {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = Movie.initializeMovies();
+        List<Movie> actual = new ArrayList<>();
+
+       //Act
+        actual=Movie.filterMovieListByGenres(movieList, null);
+
+        //Assert
+        System.out.println(expected+" \n"+actual);
+        assertEquals(expected,actual);
+
+    }
+
+    @Test
+    void check_if_movie_list_has_no_elements_when_filtered_by_genre_with_no_films() {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+
+        //Act
+        actual=Movie.filterMovieListByGenres(movieList, Genre.HISTORY);
+
+        //Assert
+        System.out.println(expected+" \n"+actual);
+        assertEquals(expected,actual);
+
+    }
+
+    @Test
+    void check_if_movie_list_contains_filtered_elements_from_filtered_movie_list_after_being_sorted() {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> filteredMovieList = Movie.filterMovieListByGenres(movieList,Genre.ACTION);
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+
+        expected.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
+        expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
+
+        //Act
+        actual=Movie.sortListAlphabetically(filteredMovieList, true);
+
+        //Assert
+        System.out.println(expected+" \n"+actual);
+        assertEquals(expected,actual);
+
+    }
+
 }
 
