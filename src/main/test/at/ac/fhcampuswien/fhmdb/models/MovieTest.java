@@ -164,5 +164,61 @@ class MovieTest {
 
     }
 
-}
+    @Test
+    void filterMovieListByQuery() {
+        // Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+        String query = "Leg";
+
+        expected.add(new Movie("Legally Blonde", "Elle Woods, a fashionable sorority queen, is dumped by her boyfriend. She decides to follow him to law school. While there, she figures out that there is more to her than just looks.", Arrays.asList(Genre.COMEDY)));
+
+
+        // Act
+        actual = Movie.FilterMovieListByQuery(movieList, query);
+
+        // Assert
+        System.out.println(expected+ "\n" +actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void check_if_movie_gets_back_origin_list_if_query_is_empty () {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+        String query = "";
+
+        expected.add(new Movie("Legally Blonde", "Elle Woods, a fashionable sorority queen, is dumped by her boyfriend. She decides to follow him to law school. While there, she figures out that there is more to her than just looks.", Arrays.asList(Genre.COMEDY)));
+        expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
+        expected.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
+
+        //Act
+        actual = Movie.FilterMovieListByQuery(movieList, query);
+
+        //Assert
+        System.out.println(expected+ "\n" +actual);
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    void check_if_movie_gets_back_origin_list_if_query_is_invalid () {
+        //Arrange
+        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> expected = new ArrayList<>();
+        List<Movie> actual = new ArrayList<>();
+        String query = "*";
+
+        //Act
+        actual = Movie.FilterMovieListByQuery(movieList, query);
+
+        //Assert
+        System.out.println(expected + "\n" + actual);
+        assertEquals(expected, actual);
+    }
+
+    }
 

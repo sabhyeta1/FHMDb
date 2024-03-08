@@ -91,6 +91,20 @@ public class Movie {
         return filteredMovieGenreList;
     }
 
+    public static List<Movie> FilterMovieListByQuery(List<Movie>movieList, String Query) {
+
+        List<Movie> filteredMovieListQuery = new ArrayList<>();
+        for (int i= 0; i<movieList.size(); i++){
+            if (movieList.get(i).getTitle().toUpperCase().contains(Query.toUpperCase()) || (movieList.get(i).getDescription().toUpperCase().contains(Query.toUpperCase()))) {
+                filteredMovieListQuery.add(movieList.get(i));
+            }
+        }
+    return filteredMovieListQuery;
+    }
+
+
+
+
     @Override
     public String toString() {
         return "{" + title +

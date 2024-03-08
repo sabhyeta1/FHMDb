@@ -11,9 +11,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -96,7 +98,6 @@ public class HomeController implements Initializable {
         // initialize UI stuff
         movieListView.setItems(null);
         movieListView.setItems(observableMovies);
-        System.out.println(genreComboBox.getSelectionModel().getSelectedItem().toString());
     }
 
     public List<Movie> getFilteredMovies() {
@@ -105,5 +106,24 @@ public class HomeController implements Initializable {
 
     public void setFilteredMovies(List<Movie> filteredMovies) {
         this.filteredMovies = filteredMovies;
+    }
+
+    public void FilterMovieListByQuery(KeyEvent keyEvent) {
+        if (keyEvent.getCode().getName() == "Enter"){
+            if (searchField.getText().isEmpty()){
+                observableMovies.clear();
+                observableMovies.addAll(allMovies);         // add dummy data to observable list
+                // initialize UI stuff
+                movieListView.setItems(null);
+                movieListView.setItems(observableMovies);
+                return;
+            }
+            setFilteredMovies(Movie.FilterMovieListByQuery(getFilteredMovies(),searchField.getText()));
+            observableMovies.clear();
+            observableMovies.addAll(getFilteredMovies());         // add dummy data to observable list
+            // initialize UI stuff
+            movieListView.setItems(null);
+            movieListView.setItems(observableMovies);
+        }
     }
 }
