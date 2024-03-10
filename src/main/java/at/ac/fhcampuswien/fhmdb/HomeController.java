@@ -15,9 +15,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
@@ -58,21 +57,17 @@ public class HomeController implements Initializable {
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            List<Movie>sortedMovieList=new ArrayList<>();
-
             if(sortBtn.getText().equals("Sort (asc)")) {
                 // TODO sort observableMovies ascending
-                sortedMovieList=Movie.sortListAlphabetically(getFilteredMovies(),true);
-                setFilteredMovies(sortedMovieList);
+
                 observableMovies.clear();
-                observableMovies.addAll(getFilteredMovies());
+                observableMovies.addAll(Movie.sortListAlphabetically(getFilteredMovies(),true));
                 sortBtn.setText("Sort (desc)");
             } else {
                 // TODO sort observableMovies descending
-                sortedMovieList=Movie.sortListAlphabetically(getFilteredMovies(),false);
-                setFilteredMovies(sortedMovieList);
+
                 observableMovies.clear();
-                observableMovies.addAll(getFilteredMovies());
+                observableMovies.addAll(Movie.sortListAlphabetically(getFilteredMovies(),false));
                 sortBtn.setText("Sort (asc)");
             }
         });
@@ -81,25 +76,40 @@ public class HomeController implements Initializable {
     }
 
 
-    public void filterMovieList(MouseEvent mouseEvent) {
-        if (Genre.NONE.equals(Genre.valueOf(genreComboBox.getSelectionModel().getSelectedItem().toString()))){
 
-            setFilteredMovies(allMovies);
-            observableMovies.clear();
-            observableMovies.addAll(allMovies);         // add dummy data to observable list
+
+
+
+    public void FilterMovieListByQuery(KeyEvent keyEvent) {
+        if (Objects.equals(keyEvent.getCode().getName(), "Enter")){
+            try {
+                setFilteredMovies(Movie.filterMovieListByQuery(getFilteredMovies(),searchField.getText()));
+                observableMovies.clear();
+                observableMovies.addAll(getFilteredMovies());         // add dummy data to observable list
+
+            } catch (NullPointerException e) {
+                setFilteredMovies(allMovies);
+                observableMovies.addAll(allMovies);         // add dummy data to observable list
+                movieListView.setItems(null);
+                movieListView.setItems(observableMovies);
+            }
+
             // initialize UI stuff
             movieListView.setItems(null);
             movieListView.setItems(observableMovies);
-            return;
         }
-        setFilteredMovies(Movie.filterMovieListByGenres(allMovies,Genre.valueOf(genreComboBox.getSelectionModel().getSelectedItem().toString())));
-        observableMovies.clear();
-        observableMovies.addAll(filteredMovies);         // add dummy data to observable list
+    }
+    public void filterMovieList(MouseEvent mouseEvent) {
+
+        try {
+            setFilteredMovies(Movie.filterMovieLists(allMovies, (Genre) genreComboBox.getValue(),searchField.getText()));
+            observableMovies.clear();
+            observableMovies.addAll(filteredMovies);
+        } catch (NullPointerException e){}
         // initialize UI stuff
         movieListView.setItems(null);
         movieListView.setItems(observableMovies);
     }
-
     public List<Movie> getFilteredMovies() {
         return filteredMovies;
     }
@@ -108,22 +118,4 @@ public class HomeController implements Initializable {
         this.filteredMovies = filteredMovies;
     }
 
-    public void FilterMovieListByQuery(KeyEvent keyEvent) {
-        if (keyEvent.getCode().getName() == "Enter"){
-            if (searchField.getText().isEmpty()){
-                observableMovies.clear();
-                observableMovies.addAll(allMovies);         // add dummy data to observable list
-                // initialize UI stuff
-                movieListView.setItems(null);
-                movieListView.setItems(observableMovies);
-                return;
-            }
-            setFilteredMovies(Movie.FilterMovieListByQuery(getFilteredMovies(),searchField.getText()));
-            observableMovies.clear();
-            observableMovies.addAll(getFilteredMovies());         // add dummy data to observable list
-            // initialize UI stuff
-            movieListView.setItems(null);
-            movieListView.setItems(observableMovies);
-        }
-    }
 }
