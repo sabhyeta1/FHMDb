@@ -30,7 +30,7 @@ class MovieTest {
         actual = Movie.initializeMovies();
         for (int i = 0; i < expected.size(); i++) {
             // Legally Blonde (expected) == Legally Blonde (actual)
-            if (! (expected.get(i).getTitle().equals(actual.get(i).getTitle()))) {
+            if (!(expected.get(i).getTitle().equals(actual.get(i).getTitle()))) {
                 check = false;
             }
         }
@@ -57,7 +57,7 @@ class MovieTest {
         expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
 
         //Act
-        actual=Movie.sortListAlphabetically(movies,true);
+        actual = Movie.sortListAlphabetically(movies, true);
 
         for (int i = 0; i < expected.size(); i++) {
             // Legally Blonde (expected) == Legally Blonde (actual)
@@ -67,9 +67,10 @@ class MovieTest {
             }
         }
         //Arrange
-        System.out.println(expected+"\n"+actual);
+        System.out.println(expected + "\n" + actual);
         assertTrue(checker);
     }
+
     @Test
     void check_if_method_set_on_false_returns_the_movieList_in_reverse_alphabetic_order() {
         //Arrange
@@ -83,7 +84,7 @@ class MovieTest {
         expected.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
 
         //Act
-        actual=Movie.sortListAlphabetically(movieList,false);
+        actual = Movie.sortListAlphabetically(movieList, false);
 
         for (int i = 0; i < expected.size(); i++) {
             // Legally Blonde (expected) == Legally Blonde (actual)
@@ -93,7 +94,7 @@ class MovieTest {
             }
         }
         //Arrange
-        System.out.println(expected+"\n"+actual);
+        System.out.println(expected + "\n" + actual);
         assertTrue(checker);
     }
 
@@ -107,13 +108,14 @@ class MovieTest {
         expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
         expected.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
         //Act
-        actual=Movie.filterMovieListByGenres(movieList, Genre.ACTION);
+        actual = Movie.filterMovieListByGenres(movieList, Genre.ACTION);
 
         //Assert
 
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
 
     }
+
     @Test
     void check_if_movie_list_is_returned_correctly_if_there_is_no_filter() {
         //Arrange
@@ -121,12 +123,12 @@ class MovieTest {
         List<Movie> expected = Movie.initializeMovies();
         List<Movie> actual = new ArrayList<>();
 
-       //Act
-        actual=Movie.filterMovieListByGenres(movieList, null);
+        //Act
+        actual = Movie.filterMovieListByGenres(movieList, null);
 
         //Assert
-        System.out.println(expected+" \n"+actual);
-        assertEquals(expected,actual);
+        System.out.println(expected + " \n" + actual);
+        assertEquals(expected, actual);
 
     }
 
@@ -138,11 +140,11 @@ class MovieTest {
         List<Movie> actual = new ArrayList<>();
 
         //Act
-        actual=Movie.filterMovieListByGenres(movieList, Genre.HISTORY);
+        actual = Movie.filterMovieListByGenres(movieList, Genre.DOCUMENTARY);
 
         //Assert
-        System.out.println(expected+" \n"+actual);
-        assertEquals(expected,actual);
+        System.out.println(expected + " \n" + actual);
+        assertEquals(expected, actual);
 
     }
 
@@ -150,7 +152,7 @@ class MovieTest {
     void check_if_movie_list_contains_filtered_elements_from_filtered_movie_list_after_being_sorted() {
         //Arrange
         List<Movie> movieList = Movie.initializeMovies();
-        List<Movie> filteredMovieList = Movie.filterMovieListByGenres(movieList,Genre.ACTION);
+        List<Movie> filteredMovieList = Movie.filterMovieListByGenres(movieList, Genre.ACTION);
         List<Movie> expected = new ArrayList<>();
         List<Movie> actual = new ArrayList<>();
 
@@ -158,16 +160,16 @@ class MovieTest {
         expected.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
 
         //Act
-        actual=Movie.sortListAlphabetically(filteredMovieList, true);
+        actual = Movie.sortListAlphabetically(filteredMovieList, true);
 
         //Assert
-        System.out.println(expected+" \n"+actual);
-        assertEquals(expected,actual);
+        System.out.println(expected + " \n" + actual);
+        assertEquals(expected, actual);
 
     }
 
     @Test
-    void  test_if_filter_movie_list_by_query_returns_matching_movies() {
+    void test_if_filter_movie_list_by_query_returns_matching_movies() {
         // Arrange
         List<Movie> movieList = Movie.initializeMovies();
         List<Movie> expected = new ArrayList<>();
@@ -181,12 +183,12 @@ class MovieTest {
         actual = Movie.filterMovieListByQuery(movieList, query);
 
         // Assert
-        System.out.println(expected+ "\n" +actual);
+        System.out.println(expected + "\n" + actual);
         assertEquals(expected, actual);
     }
 
     @Test
-    void check_if_movie_gets_back_origin_list_if_query_is_empty () {
+    void check_if_movie_gets_back_origin_list_if_query_is_empty() {
         //Arrange
         List<Movie> movieList = Movie.initializeMovies();
         List<Movie> expected = new ArrayList<>();
@@ -201,13 +203,13 @@ class MovieTest {
         actual = Movie.filterMovieListByQuery(movieList, query);
 
         //Assert
-        System.out.println(expected+ "\n" +actual);
+        System.out.println(expected + "\n" + actual);
         assertEquals(expected, actual);
 
     }
 
     @Test
-    void check_if_movie_gets_back_origin_list_if_query_is_invalid () {
+    void check_if_movie_gets_back_origin_list_if_query_is_invalid() {
         //Arrange
         List<Movie> movieList = Movie.initializeMovies();
         List<Movie> expected = new ArrayList<>();
@@ -222,5 +224,7 @@ class MovieTest {
         assertEquals(expected, actual);
     }
 
-    }
+}
+
+
 

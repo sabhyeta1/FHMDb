@@ -83,7 +83,7 @@ public class HomeController implements Initializable {
     public void FilterMovieListByQuery(KeyEvent keyEvent) {
         if (Objects.equals(keyEvent.getCode().getName(), "Enter")){
             try {
-                setFilteredMovies(Movie.filterMovieListByQuery(getFilteredMovies(),searchField.getText()));
+                setFilteredMovies(Movie.filterMovieLists(getFilteredMovies(),null, searchField.getText()));
                 observableMovies.clear();
                 observableMovies.addAll(getFilteredMovies());         // add dummy data to observable list
 
