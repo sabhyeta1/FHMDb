@@ -82,6 +82,10 @@ public class Movie {
             return movieList;
         }
 
+        if (genre==Genre.NONE){
+            return movieList;
+        }
+
         List<Movie>filteredMovieGenreList = new ArrayList<>();
         for (int i=0;i< movieList.size();i++){
             if (movieList.get(i).getGenres().contains(genre.toString())){
@@ -91,8 +95,10 @@ public class Movie {
         return filteredMovieGenreList;
     }
 
-    public static List<Movie> FilterMovieListByQuery(List<Movie>movieList, String Query) {
-
+    public static List<Movie> filterMovieListByQuery(List<Movie>movieList, String Query) {
+        if (Query.isEmpty()){
+            return movieList;
+        }
         List<Movie> filteredMovieListQuery = new ArrayList<>();
         for (int i= 0; i<movieList.size(); i++){
             if (movieList.get(i).getTitle().toUpperCase().contains(Query.toUpperCase()) || (movieList.get(i).getDescription().toUpperCase().contains(Query.toUpperCase()))) {
@@ -102,8 +108,20 @@ public class Movie {
     return filteredMovieListQuery;
     }
 
+    public static List<Movie> filterMovieLists(List<Movie>movieList, Genre genre, String query){
 
+        if (genre==null && query.isBlank()){
+            return movieList;
+        } else if (genre!=null && query.isBlank()) {
+            return filterMovieListByGenres(movieList, genre);
+        } else if (genre==null) {
+            return filterMovieListByQuery(movieList, query);
+        } else {
+            return filterMovieListByQuery(filterMovieListByGenres(movieList, genre), query);
+        }
 
+       // return movieList;
+    }
 
     @Override
     public String toString() {
