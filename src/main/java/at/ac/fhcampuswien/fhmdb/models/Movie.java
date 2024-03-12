@@ -35,14 +35,6 @@ public class Movie {
         return s.toString();
     }
 
-    public static List<Movie> initializeMoviesforTestCases(){
-        List<Movie> movies = new ArrayList<>();
-        movies.add(new Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.", Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION, Genre.THRILLER)));
-        movies.add(new Movie("Legally Blonde", "Elle Woods, a fashionable sorority queen, is dumped by her boyfriend. She decides to follow him to law school. While there, she figures out that there is more to her than just looks.", List.of(Genre.COMEDY)));
-        movies.add(new Movie("The Dark Knight", "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.", Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.CRIME)));
-
-        return movies;
-    }
     public static List<Movie> initializeMovies(){
         List<Movie> movies = new ArrayList<>();
         movies.add(new Movie("Legally Blonde", "Elle Woods, a fashionable sorority queen, is dumped by her boyfriend. She decides to follow him to law school. While there, she figures out that there is more to her than just looks.", Arrays.asList(Genre.COMEDY)));
@@ -114,7 +106,7 @@ public class Movie {
         }
 
         if (genre==Genre.NONE){
-            return movieList;
+            return initializeMovies();
         }
 
         List<Movie>filteredMovieGenreList = new ArrayList<>();
@@ -128,7 +120,7 @@ public class Movie {
 
     public static List<Movie> filterMovieListByQuery(List<Movie>movieList, String Query) {
         if (Query.isEmpty()){
-            return movieList;
+            return initializeMovies();
         }
         List<Movie> filteredMovieListQuery = new ArrayList<>();
         for (int i= 0; i<movieList.size(); i++){
