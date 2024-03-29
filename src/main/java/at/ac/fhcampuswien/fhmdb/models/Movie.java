@@ -7,6 +7,17 @@ public class Movie {
     private String description;
     private List <Genre> genres;
 
+    private String id;
+
+    private int releaseYear;
+    private String imgUrl;
+    private int lengthInMinutes;
+    private String [] directors;
+    private String [] writers;
+    private String [] mainCast;
+    private double rating;
+
+
     public Movie(String title, String description) {
         this.title = title;
         this.description = description;
@@ -33,6 +44,38 @@ public class Movie {
         }
         s.delete(s.length() - 2, s.length());
         return s.toString();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getReleaseYear() {
+        return releaseYear;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public int getLengthInMinutes() {
+        return lengthInMinutes;
+    }
+
+    public String[] getDirectors() {
+        return directors;
+    }
+
+    public String[] getWriters() {
+        return writers;
+    }
+
+    public String[] getMainCast() {
+        return mainCast;
+    }
+
+    public double getRating() {
+        return rating;
     }
 
     public static List<Movie> initializeMovies(){
