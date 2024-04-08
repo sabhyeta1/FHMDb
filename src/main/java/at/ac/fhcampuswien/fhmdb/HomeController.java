@@ -19,8 +19,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 public class HomeController implements Initializable {
+    public JFXComboBox releaseYearComboBox;
+    public JFXComboBox ratingComboBox;
+    public JFXButton searchBtnByUrl;
+    MovieAPI movieAPI = new MovieAPI();
+
     @FXML
     public JFXButton searchBtn;
 
@@ -36,8 +42,8 @@ public class HomeController implements Initializable {
     @FXML
     public JFXButton sortBtn;
 
-    public List<Movie> allMovies = MovieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
-    public List<Movie> filteredMovies = MovieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
+    public List<Movie> allMovies = movieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
+    public List<Movie> filteredMovies =  movieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
 
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
@@ -52,6 +58,9 @@ public class HomeController implements Initializable {
         // TODO add genre filter items with genreComboBox.getItems().addAll(...)
         genreComboBox.setPromptText("Filter by Genre");
         genreComboBox.getItems().addAll(Genre.values());
+        releaseYearComboBox.getItems().addAll(IntStream.range(1980,2019).boxed().toList());
+        ratingComboBox.getItems().addAll(IntStream.range(0,11).boxed().toList());
+
 
         // TODO add event handlers to buttons and call the regarding methods
         // either set event handlers in the fxml file (onAction) or add them here
@@ -110,6 +119,66 @@ public class HomeController implements Initializable {
         // initialize UI stuff
         movieListView.setItems(null);
         movieListView.setItems(observableMovies);
+    }
+
+    public void filterMovieListByUrl(MouseEvent mouseEvent) {
+        StringBuilder stb = new StringBuilder("https://prog2.fh-campuswien.ac.at/movies?");
+        String searchText = searchField.getText();
+        Genre selectedGenre = (Genre) genreComboBox.getValue();
+        Integer selectedReleaseYear = (Integer) releaseYearComboBox.getValue();
+        double selectedRating;
+
+        if (searchText.isBlank()) {
+            // searchText = "";
+
+        } else stb.append("&query=").append(searchText);
+
+
+        if (selectedGenre == null) {
+            // selectedGenre = Genre.NONE;
+
+        } else  stb.append("&genre=").append(selectedGenre);
+
+        if (selectedReleaseYear == null) {
+            //selectedReleaseYear = -1;
+
+
+        } else stb.append("&releaseYear=").append(selectedReleaseYear);
+
+        try {
+            selectedRating = (int) ratingComboBox.getValue();
+            stb.append("&ratingFrom=").append(selectedRating);
+
+        } catch (NullPointerException e) {
+            selectedRating = -1.0;
+            stb.append("&ratingFrom=").append(selectedRating);
+
+        }
+
+
+        setFilteredMovies(MovieAPI.run(stb.toString()));
+        // return movieList;
+
+        // All parameters are not null, proceed with filtering
+
+        observableMovies.clear();
+        observableMovies.addAll(filteredMovies);
+
+        // initialize UI stuff
+        movieListView.setItems(null);
+        movieListView.setItems(observableMovies);
+
+        //Java Stream
+        /*
+        Movie.getMostPopularActor(filteredMovies);
+        Movie.getLongestMovieTitle(filteredMovies);
+        Movie.countMoviesFrom(filteredMovies,"Francis Ford Coppola");
+        Movie.getMoviesBetweenYears(filteredMovies,2000,2020);
+         */
+
+        genreComboBox.getSelectionModel().clearSelection();
+        releaseYearComboBox.getSelectionModel().clearSelection();
+        ratingComboBox.getSelectionModel().clearSelection();
     }
     public List<Movie> getFilteredMovies() {
         return filteredMovies;

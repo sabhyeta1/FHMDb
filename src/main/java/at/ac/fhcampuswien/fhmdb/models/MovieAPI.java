@@ -11,28 +11,29 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class MovieAPI {
+    // https://prog2.fh-campuswien.ac.at/movies -> https://prog2.fh-campuswien.ac.at/movies?query=wrgg&genre=ROMANCE&releaseYear=2010&ratingFrom=4' -> ...movies? query,genre,releaseYear und rating Abfrage; url anhängen wenn stimmt
     static OkHttpClient client = new OkHttpClient();
 
-    static public List<Movie> run(String url) {
+    static public List<Movie> run(String url)  {
         Request request = new Request.Builder()
                 .url(url)
-                .header("User-Agent", "http.agent")
+                .header("USER-AGENT","http.agent")
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<Movie>>(){}.getType();
+            assert response.body() != null;
 
-            return gson.fromJson(response.body().string(), type);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return gson.fromJson(response.body().string(),type);
+        } catch (IOException e){
+            return Movie.initializeMovies();
         }
     }
 
-    public static void main(String[] args) {
-
-        System.out.println(MovieAPI.run("https://prog2.fh-campuswien.ac.at/movies"));
+    public static void main(String[] args) throws IOException, NoSuchMethodException {
+        MovieAPI movieAPI = new MovieAPI();
+        List<Movie> res = movieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
 
     }
 }
