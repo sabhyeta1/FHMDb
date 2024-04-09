@@ -16,10 +16,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class HomeController implements Initializable {
     public JFXComboBox releaseYearComboBox;
@@ -180,6 +180,74 @@ public class HomeController implements Initializable {
         releaseYearComboBox.getSelectionModel().clearSelection();
         ratingComboBox.getSelectionModel().clearSelection();
     }
+
+    public static String getMostPopularActor(List<Movie> movies){
+        //movies.stream().filter(movie -> Arrays.stream(movie.getMainCast()).toList();
+        Stream<String[]> mainCast=movies.stream().map(Movie::getMainCast);
+        // mainCast.forEach(strings -> Arrays.stream(strings).max(Arrays.stream(strings).map(s -> s.contains(Arrays.toString(strings)))));
+        List<String>stringList=mainCast.flatMap(Arrays::stream).toList();
+        Map<String,Long> hashList =  stringList.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+        //hashList=hashList.entrySet().stream().max(Map.Entry.comparingByKey());
+        // source https://stackoverflow.com/questions/5911174/finding-key-associated-with-max-value-in-a-java-map
+        try {
+
+            return Collections.max(hashList.entrySet(),Map.Entry.comparingByValue()).getKey();
+
+        } catch (NoSuchElementException e){
+            return null;
+        }
+    }
+
+
+
+
+
+    public static int getLongestMovieTitle(List<Movie> movies){
+        try {
+
+            return movies.stream()
+                    .mapToInt(w -> w.getTitle().length())
+                    .max()
+                    .getAsInt();
+        } catch (NoSuchElementException e){
+            return 0;
+        }
+
+
+    }
+
+    public static long countMoviesFrom(List<Movie> movies, String director){
+        //System.out.println(movies.stream().filter(movie -> Arrays.stream(movie.getDirectors()).
+        // System.out.println(movies.stream().filter(movie -> Arrays.toString(movie.getDirectors()).contains(director)).count());
+        // return movies.stream().filter(movie -> containsDirector(movie,director)).count();
+        try {
+
+            return movies
+                    .stream()
+                    .filter(movie -> Arrays.toString(movie.getDirectors()).contains(director))
+                    .count();
+
+        } catch (NoSuchElementException e){
+            return 0;
+        }
+
+
+    }
+
+
+    public static List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear){
+        // System.out.println(movies.stream().filter(movie -> endYear>=movie.getReleaseYear() && movie.getReleaseYear()>=startYear).toList());
+        try {
+
+            return movies.stream()
+                    .filter(movie -> movie.getReleaseYear()>=startYear && endYear>=movie.getReleaseYear())
+                    .toList();
+        } catch (NoSuchElementException e){
+            return null;
+        }
+
+    }
+
     public List<Movie> getFilteredMovies() {
         return filteredMovies;
     }

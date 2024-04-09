@@ -28,6 +28,13 @@ public class Movie {
         this.genres = genres;
     }
 
+    public Movie(String title, int releaseYear, String[] directors, String[] mainCast) {
+        this.title = title;
+        this.releaseYear = releaseYear;
+        this.directors = directors;
+        this.mainCast = mainCast;
+    }
+
     public String getTitle() {
         return title;
     }
