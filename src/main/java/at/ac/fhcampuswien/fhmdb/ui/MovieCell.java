@@ -9,6 +9,8 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.util.Arrays;
+
 public class MovieCell extends ListCell<Movie> {
     private final Label title = new Label();
     private final Label detail = new Label();
@@ -26,7 +28,7 @@ public class MovieCell extends ListCell<Movie> {
             title.setText(movie.getTitle());
             detail.setText(
                     movie.getDescription() != null
-                            ? movie.getDescription() +"\n\n"+movie.getGenres()
+                            ? movie.getDescription() +"\n\n Genre: "+movie.getGenres()+"\n\n Rating: "+movie.getRating()+" , Release Year: "+movie.getReleaseYear()+"\n\n Directors: "+ Arrays.toString(movie.getDirectors()).substring(1,Arrays.toString(movie.getDirectors()).length()-1)+" , MainCast: "+ Arrays.toString(movie.getMainCast()).substring(1,Arrays.toString(movie.getMainCast()).length()-1)
                             : "No description available"
             );
 

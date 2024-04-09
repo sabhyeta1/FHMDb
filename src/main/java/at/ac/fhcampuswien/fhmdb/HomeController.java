@@ -109,7 +109,7 @@ public class HomeController implements Initializable {
             movieListView.setItems(observableMovies);
         }
     }
-    public void filterMovieList(MouseEvent mouseEvent) {
+    public void filterMovieList() {
 
         try {
             setFilteredMovies(Movie.filterMovieLists(allMovies, (Genre) genreComboBox.getValue(),searchField.getText()));
@@ -121,45 +121,19 @@ public class HomeController implements Initializable {
         movieListView.setItems(observableMovies);
     }
 
-    public void filterMovieListByUrl(MouseEvent mouseEvent) {
-        StringBuilder stb = new StringBuilder("https://prog2.fh-campuswien.ac.at/movies?");
-        String searchText = searchField.getText();
-        Genre selectedGenre = (Genre) genreComboBox.getValue();
-        Integer selectedReleaseYear = (Integer) releaseYearComboBox.getValue();
+    public void filterMovieListByUrl() {
+
         double selectedRating;
-
-        if (searchText.isBlank()) {
-            // searchText = "";
-
-        } else stb.append("&query=").append(searchText);
-
-
-        if (selectedGenre == null) {
-            // selectedGenre = Genre.NONE;
-
-        } else  stb.append("&genre=").append(selectedGenre);
-
-        if (selectedReleaseYear == null) {
-            //selectedReleaseYear = -1;
-
-
-        } else stb.append("&releaseYear=").append(selectedReleaseYear);
 
         try {
             selectedRating = (int) ratingComboBox.getValue();
-            stb.append("&ratingFrom=").append(selectedRating);
 
         } catch (NullPointerException e) {
             selectedRating = -1.0;
-            stb.append("&ratingFrom=").append(selectedRating);
 
         }
 
-
-        setFilteredMovies(MovieAPI.run(stb.toString()));
-        // return movieList;
-
-        // All parameters are not null, proceed with filtering
+        setFilteredMovies(MovieAPI.filterMovieListByUrl(searchField.getText(), (Genre) genreComboBox.getValue(), (Integer) releaseYearComboBox.getValue(),selectedRating));
 
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
@@ -168,19 +142,10 @@ public class HomeController implements Initializable {
         movieListView.setItems(null);
         movieListView.setItems(observableMovies);
 
-        //Java Stream
-        /*
-        Movie.getMostPopularActor(filteredMovies);
-        Movie.getLongestMovieTitle(filteredMovies);
-        Movie.countMoviesFrom(filteredMovies,"Francis Ford Coppola");
-        Movie.getMoviesBetweenYears(filteredMovies,2000,2020);
-         */
-
         genreComboBox.getSelectionModel().clearSelection();
         releaseYearComboBox.getSelectionModel().clearSelection();
         ratingComboBox.getSelectionModel().clearSelection();
     }
-
     public static String getMostPopularActor(List<Movie> movies){
         //movies.stream().filter(movie -> Arrays.stream(movie.getMainCast()).toList();
         Stream<String[]> mainCast=movies.stream().map(Movie::getMainCast);
@@ -217,10 +182,7 @@ public class HomeController implements Initializable {
     }
 
     public static long countMoviesFrom(List<Movie> movies, String director){
-        //System.out.println(movies.stream().filter(movie -> Arrays.stream(movie.getDirectors()).
-        // System.out.println(movies.stream().filter(movie -> Arrays.toString(movie.getDirectors()).contains(director)).count());
-        // return movies.stream().filter(movie -> containsDirector(movie,director)).count();
-        try {
+      try {
 
             return movies
                     .stream()
@@ -236,7 +198,6 @@ public class HomeController implements Initializable {
 
 
     public static List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear){
-        // System.out.println(movies.stream().filter(movie -> endYear>=movie.getReleaseYear() && movie.getReleaseYear()>=startYear).toList());
         try {
 
             return movies.stream()
