@@ -147,9 +147,13 @@ public class HomeController implements Initializable {
         ratingComboBox.getSelectionModel().clearSelection();
     }
     public static String getMostPopularActor(List<Movie> movies){
-        //movies.stream().filter(movie -> Arrays.stream(movie.getMainCast()).toList();
+        for (int i = 0; i<movies.size();i++){
+            for (int e =0; e<movies.get(i).getMainCast().length;e++){
+                //speicher werte von main cast here ->movies.get(i).getMainCast()[e]
+            }
+        }
         Stream<String[]> mainCast=movies.stream().map(Movie::getMainCast);
-        // mainCast.forEach(strings -> Arrays.stream(strings).max(Arrays.stream(strings).map(s -> s.contains(Arrays.toString(strings)))));
+        //maincast= Maincast1[], MainCast2[],...
         List<String>stringList=mainCast.flatMap(Arrays::stream).toList();
         Map<String,Long> hashList =  stringList.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()));
         //hashList=hashList.entrySet().stream().max(Map.Entry.comparingByKey());
@@ -184,8 +188,7 @@ public class HomeController implements Initializable {
     public static long countMoviesFrom(List<Movie> movies, String director){
       try {
 
-            return movies
-                    .stream()
+            return movies.stream()   //"{Director1,Director2,director...}"  =>director?
                     .filter(movie -> Arrays.toString(movie.getDirectors()).contains(director))
                     .count();
 

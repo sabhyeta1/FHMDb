@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
     class HomeControllerTest {
         @Test
-        void check_if_method_corresponds_correctly_by_returning_null_if_movie_list_is_empty() {
+        void check_if_method_corresponds_correctly_by_returning_null_if_movie_list_is_empty_and_it_doesnt_crash_by_null_pointer_exception() {
             // Arrange
             List<Movie> emptyMovies = List.of();
 
@@ -98,7 +98,6 @@ import static org.junit.jupiter.api.Assertions.*;
             String director = "DirectorX";
 
             // Act
-            // Act
             long actual = HomeController.countMoviesFrom(movieList, director);
 
             // Assert
@@ -114,7 +113,7 @@ import static org.junit.jupiter.api.Assertions.*;
             String director = "Francis Ford Coppola";
 
             movieList.add(new Movie("The Lord of the Rings: The Two Towers", 2002, new String[]{"Peter Jackson"}, new String[]{"Elijah Wood", "Ian McKellen", "Viggo Mortensen"}));
-            movieList.add(new Movie("TThe Godfather", 1972, new String[]{"Francis Ford Coppola"}, new String[]{"Marlon Brando", "Al Pacino", "James Caan"}));
+            movieList.add(new Movie("The Godfather", 1972, new String[]{"Francis Ford Coppola"}, new String[]{"Marlon Brando", "Al Pacino", "James Caan"}));
             movieList.add(new Movie("The Shawshank Redemption", 1994, new String[]{"Francis Ford Coppola"}, new String[]{"Tim Robbins", "Morgan Freeman", "Bob Gunton"}));
             //        movieList.add(new Movie( "The Shawshank Redemption",1994, new String[]{"Frank Darabont"},new String[]{ "Tim Robbins", "Morgan Freeman", "Bob Gunton"}));
             //Act
@@ -132,12 +131,14 @@ import static org.junit.jupiter.api.Assertions.*;
             int startYear = 2000;
             int endYear = 2020;
             int expected = 0;
-
+            int actual=0;
             // Act
             List<Movie> moviesBetweenYears = HomeController.getMoviesBetweenYears(emptyMovies, startYear, endYear);
+            assert moviesBetweenYears != null;
+            actual=moviesBetweenYears.size();
 
             // Assert
-            assertEquals(expected, moviesBetweenYears.size(), "Should return an empty list for an empty list of movies");
+            assertEquals(expected, actual, "Should return an empty list for an empty list of movies");
         }
 
         @Test
