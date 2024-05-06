@@ -1,8 +1,11 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
+import at.ac.fhcampuswien.fhmdb.database.MovieEntity;
+
+import java.io.*;
 import java.util.*;
 
-public class Movie {
+public class Movie implements Serializable {
     private String title;
     private String description;
     private List <Genre> genres;
@@ -15,7 +18,10 @@ public class Movie {
     private String [] directors;
     private String [] writers;
     private String [] mainCast;
+
     private double rating;
+
+
 
 
     public Movie(String title, String description) {
@@ -35,13 +41,29 @@ public class Movie {
         this.mainCast = mainCast;
     }
 
+    public Movie(String title, String description, List<Genre> genres, String id, int releaseYear, String imgUrl, int lengthInMinutes, double rating) {
+        this.title = title;
+        this.description = description;
+        this.genres = genres;
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.imgUrl = imgUrl;
+        this.lengthInMinutes = lengthInMinutes;
+        this.rating = rating;
+    }
+
+
+
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() {
+   public String getDescription() {
         return description;
     }
+
+
+
 
     public String getGenres() { // ADVENTUREDRAMA ->  DRAMA, ROMANCE;
         StringBuilder s = new StringBuilder();
@@ -195,6 +217,33 @@ public class Movie {
 
        // return movieList;
     }
+    public static void writeMoviesToFile(List<Movie> movies) {
+        String filename = "Text.txt";
+        File file = new File(filename);
+        boolean flag = false;
+        if (flag){
+            try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
+                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+                objectOutputStream.writeObject(movies);
+                System.out.println("Movies have been written to " + filename);
+            } catch (IOException e) {
+                System.err.println("Error writing movies to file: " + e.getMessage());
+            }
+        }
+
+    }
+
+    public static List<Movie> readMoviesFromFile(String filename) {
+        List<Movie> movies = null;
+        try (FileInputStream fileInputStream = new FileInputStream(filename);
+             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+            movies = (List<Movie>) objectInputStream.readObject();
+            System.out.println("Movies have been read from " + filename);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error reading movies from file: " + e.getMessage());
+        }
+        return movies;
+    }
 
     @Override
     public String toString() {
@@ -202,6 +251,7 @@ public class Movie {
                 "," + description +
                 ", " + genres.toString() + "}\n";
     }
+
 
     @Override
     public boolean equals(Object o) {

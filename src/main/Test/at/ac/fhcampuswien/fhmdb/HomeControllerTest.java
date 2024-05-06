@@ -2,6 +2,8 @@ package at.ac.fhcampuswien.fhmdb;
 
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,6 +14,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
     class HomeControllerTest {
+        static List<Movie>listMovie =new ArrayList<>();
+        @BeforeAll
+        static void setup(){
+            listMovie = new ArrayList<>();
+            listMovie.add(new Movie("The Lord of the Rings: The Two Towers", 2002, new String[]{"Peter Jackson"}, new String[]{"Elijah Wood", "Ian McKellen", "Viggo Mortensen"}));
+            listMovie.add(new Movie("The Godfather", 1972, new String[]{"Francis Ford Coppola"}, new String[]{"Marlon Brando", "Elijah Wood", "James Caan"}));
+            listMovie.add(new Movie("The Shawshank Redemption", 1994, new String[]{"Francis Ford Coppola"}, new String[]{"Tim Robbins", "Morgan Freeman", "Bob Gunton"}));
+            System.out.println("Setup");
+        }
         @Test
         void check_if_method_corresponds_correctly_by_returning_null_if_movie_list_is_empty_and_it_doesnt_crash_by_null_pointer_exception() {
             // Arrange
