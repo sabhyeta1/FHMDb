@@ -16,22 +16,22 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
     private final Label title = new Label();
     private final Label detail = new Label();
     private final VBox layout = new VBox(title, detail);
-    Button actionButton = new Button("add/remove");
+    Button actionButton = new Button("Add/remove");
 
     boolean flag = true;
-    public MovieCell (ClickEventHandler<Movie> addToWatchlistClicked, ClickEventHandler<Movie> removeFromWatchlistClicked){
+    public MovieCell (ClickEventHandler<Movie> addToWatchlistClicked){
         super();
         //TODO set Buttontext add/remove watchlist
         //TODO Callback for buttonclick
         actionButton.setOnAction(event -> {
             if (!isEmpty() && getItem() != null) {
                 Movie movie = getItem();
-                if (flag) {
                     addToWatchlistClicked.onClick(movie);
-                } else {
-                    removeFromWatchlistClicked.onClick(movie);
 
-                }
+
+                   // removeFromWatchlistClicked.onClick(movie);
+
+
             }
         });
 
@@ -56,7 +56,7 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
             title.setText(movie.getTitle());
             detail.setText(
                     movie.getDescription() != null
-                            ? movie.getDescription() +"\n\n Genre: "+movie.getGenres()+"\n\n Rating: "+movie.getRating()+" , Release Year: "+movie.getReleaseYear()+"\n\n Directors: "+ Arrays.toString(movie.getDirectors()).substring(1,Arrays.toString(movie.getDirectors()).length()-1)+" , MainCast: "+ Arrays.toString(movie.getMainCast()).substring(1,Arrays.toString(movie.getMainCast()).length()-1)
+                            ? movie.getDescription() +"\n\n Genre: "+movie.getGenres()+"\n\n Rating: "+movie.getRating()+" , Release Year: "+movie.getReleaseYear()//+"\n\n Directors: " + Arrays.toString(movie.getDirectors()).substring(1,Arrays.toString(movie.getDirectors()).length()-1)+" , MainCast: "+ Arrays.toString(movie.getMainCast()).substring(1,Arrays.toString(movie.getMainCast()).length()-1)
                             : "No description available"
             );
            // button.setBackground(new Background(new BackgroundFill(Color.web(""), null, null)));

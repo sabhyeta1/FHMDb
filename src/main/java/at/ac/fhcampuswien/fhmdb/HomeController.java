@@ -21,6 +21,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
+import java.text.BreakIterator;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -76,8 +77,8 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // databaseManager.testDB();
 
-        ClickEventHandler<Movie> addToWatchlistClicked = this::add_removeFromWatchList;
-        ClickEventHandler<Movie> removeFromWatchlistClicked = this::add_removeFromWatchList;
+        ClickEventHandler<Movie> addToWatchlistClicked = addToWatchlist;
+       // ClickEventHandler<Movie> removeFromWatchlistClicked = this::removeFromWatchlist;
 
         //movieRepository.addAllMovies(allMovies); // Achtung Zeile befüllt DB!!
         //MovieEntity.fromMovies(allMovies);
@@ -87,7 +88,7 @@ public class HomeController implements Initializable {
         observableMovies.addAll(allMovies);         // add dummy data to observable list
         // initialize UI stuff
         movieListView.setItems(observableMovies);   // set data of observable list to list view
-        movieListView.setCellFactory(movieListView -> new MovieCell(addToWatchlistClicked, removeFromWatchlistClicked)); // use custom cell factory to display data
+        movieListView.setCellFactory(movieListView -> new MovieCell(addToWatchlistClicked)); // use custom cell factory to display data
 
         // TODO add genre filter items with genreComboBox.getItems().addAll(...)
         genreComboBox.setPromptText("Filter by Genre");
@@ -300,13 +301,15 @@ public class HomeController implements Initializable {
         observableMovies.addAll(filteredMovies);
     }
 
-    private void add_removeFromWatchList(Movie movie) {
+    /*private void add_removeFromWatchList(Movie movie) {
         if (watchListBtn.getText().equals("See Watchlist")) {
             addToWatchlist(movie);
         } else {
             removeFromWatchlist(movie);
         }
     }
+
+     */
 
     private void removeFromWatchlist(Movie movie) {
         System.out.println();
@@ -326,11 +329,17 @@ public class HomeController implements Initializable {
 
     }
 
-    private void addToWatchlist(Movie movie) {
-        System.out.println();
-        watchlistRepository.addToWatchlist(movie.getId());
 
-    }
+    private final ClickEventHandler addToWatchlist = (clickedItem) ->
+    {
+        // add code to add movie to watchlist here
+        Movie movie = (Movie) clickedItem;
+
+       // System.out.println(movieCell.getText());
+        watchlistRepository.addToWatchlist(movie.getId());
+        System.out.println(movie.getTitle());
+
+    };
 
     public void setVisibilityOfElements(boolean flag) {
         searchField.setVisible(flag);

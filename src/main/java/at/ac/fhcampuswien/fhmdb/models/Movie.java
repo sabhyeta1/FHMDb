@@ -52,7 +52,19 @@ public class Movie implements Serializable {
         this.rating = rating;
     }
 
-
+    public Movie(String title, String description, List<Genre> genres, String id, int releaseYear, String imgUrl, int lengthInMinutes, String[] directors, String[] writers, String[] mainCast, double rating) {
+        this.title = title;
+        this.description = description;
+        this.genres = genres;
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.imgUrl = imgUrl;
+        this.lengthInMinutes = lengthInMinutes;
+        this.directors = directors;
+        this.writers = writers;
+        this.mainCast = mainCast;
+        this.rating = rating;
+    }
 
     public String getTitle() {
         return title;
@@ -220,8 +232,7 @@ public class Movie implements Serializable {
     public static void writeMoviesToFile(List<Movie> movies) {
         String filename = "Text.txt";
         File file = new File(filename);
-        boolean flag = false;
-        if (flag){
+        if (file.exists() && file.length() > 0){
             try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
                  ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(movies);
@@ -233,14 +244,18 @@ public class Movie implements Serializable {
 
     }
 
-    public static List<Movie> readMoviesFromFile(String filename) {
+    public static List<Movie> readMoviesFromFile(String filename)  throws  IOException{
         List<Movie> movies = null;
         try (FileInputStream fileInputStream = new FileInputStream(filename);
              ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
             movies = (List<Movie>) objectInputStream.readObject();
             System.out.println("Movies have been read from " + filename);
-        } catch (IOException | ClassNotFoundException e) {
+
+
+        } catch (IOException e) {
             System.err.println("Error reading movies from file: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return movies;
     }
