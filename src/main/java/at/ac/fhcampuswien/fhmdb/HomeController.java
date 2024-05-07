@@ -89,7 +89,7 @@ public class HomeController implements Initializable {
         // databaseManager.testDB();
 
         ClickEventHandler<Movie> addToWatchlistClicked = this::add_removeFromWatchList;
-       // ClickEventHandler<Movie> removeFromWatchlistClicked = removeFromWatchlist;
+       //ClickEventHandler<Movie> removeFromWatchlistClicked = removeFromWatchlist;
 
         //movieRepository.addAllMovies(allMovies); // Achtung Zeile befüllt DB!!
         //MovieEntity.fromMovies(allMovies);

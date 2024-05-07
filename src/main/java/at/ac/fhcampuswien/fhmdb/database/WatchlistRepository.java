@@ -27,7 +27,7 @@ public class WatchlistRepository {
             for (WatchlistMovieEntity watchlistMovie : watchlist) {
                 if (watchlistMovie.getApiId().equals(apiId)) {
                     // Movie already exists in watchlist, no need to add it again
-                    throw new DatabaseException("Der entry is present in the table");
+                    throw new DatabaseException("The entry is present in the table");
                     // Indicate that no change was made
                 }
             }
