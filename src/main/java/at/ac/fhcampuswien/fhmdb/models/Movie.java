@@ -250,7 +250,7 @@ public class Movie implements Serializable {
              ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
             movies = (List<Movie>) objectInputStream.readObject();
             System.out.println("Movies have been read from " + filename);
-
+            return movies;
 
         } catch (IOException e) {
             System.err.println("Error reading movies from file: " + e.getMessage());

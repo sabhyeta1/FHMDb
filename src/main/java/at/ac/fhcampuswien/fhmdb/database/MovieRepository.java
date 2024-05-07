@@ -9,11 +9,12 @@ import java.util.List;
 
 public class MovieRepository {
      Dao<MovieEntity,Long>movieDao;
-    public MovieRepository(){
+     //MovieRepository movieRepository = new MovieRepository();
+    public MovieRepository() throws DatabaseException {
         try {
             movieDao=DatabaseManager.getDatabase().getMovieDao();
         } catch (DatabaseException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Es konnte keine Instanz des MovieRepository erstellt werden");
         }
     }
     public int addAllMovies(List<Movie>movieList){
@@ -40,6 +41,27 @@ public class MovieRepository {
 
         return 1;
     }
+
+    public int addToWatchlist(String apiId) throws DatabaseException {
+        try {
+            List<MovieEntity> movieEntityList = getAllMovies();
+            for (MovieEntity movieEntity : movieEntityList) {
+                if (movieEntity.apiId.equals(apiId)) {
+                    // Movie already exists in watchlist, no need to add it again
+                    return 0; // Indicate that no change was made
+                }
+            }
+            MovieEntity movieEntity = getMovieEntityByApiId(apiId);
+            //watchlistMovie.setMovie(movieEntity);
+
+            return movieDao.create(movieEntity);
+        } catch (SQLException e) {
+            throw new DatabaseException("Der Eintrag konnte nicht in die Tabelle hinzugefügt werden");
+        } catch (DatabaseException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+    }
+
     public int removeFromMovieList(String apiId) {
         try {
             for (MovieEntity movieEntity : movieDao) {
@@ -72,7 +94,7 @@ public class MovieRepository {
        // System.out.println(movieDao.queryForAll());
     }
 
-    public MovieEntity getMovieEntityByApiId(String apiId) {
+    public MovieEntity getMovieEntityByApiId(String apiId) throws DatabaseException {
         try {
             // Query for the MovieEntity with the given apiId
             List<MovieEntity> result = movieDao.queryBuilder()
@@ -89,7 +111,8 @@ public class MovieRepository {
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+           // throw new RuntimeException();
+            throw new DatabaseException("Eintrag wurde nicht in der Tabelle gefunden");
         }
     }
 }

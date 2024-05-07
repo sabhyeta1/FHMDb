@@ -54,7 +54,17 @@ public class HomeController implements Initializable {
     public List<Movie> watchListMovies = new ArrayList<>();
     DatabaseManager databaseManager = getDatabaseManager();
 
-    MovieRepository movieRepository = new MovieRepository();
+    MovieRepository movieRepository = getMovieRepository();
+
+    private MovieRepository getMovieRepository() {
+        try {
+            return new MovieRepository();
+        } catch (DatabaseException e) {
+            showErrorPopUp(e.getMessage(),-1);
+        }
+        return null;
+    }
+
     WatchlistRepository watchlistRepository = getWatchListRepository();
 
     private WatchlistRepository getWatchListRepository() {
@@ -72,13 +82,14 @@ public class HomeController implements Initializable {
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
     private ClickEventHandler clickEventHandler;
+    ClickEventHandler<Movie> addToWatchlistClicked;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // databaseManager.testDB();
 
-        ClickEventHandler<Movie> addToWatchlistClicked = addToWatchlist;
-       // ClickEventHandler<Movie> removeFromWatchlistClicked = this::removeFromWatchlist;
+        ClickEventHandler<Movie> addToWatchlistClicked = this::add_removeFromWatchList;
+       // ClickEventHandler<Movie> removeFromWatchlistClicked = removeFromWatchlist;
 
         //movieRepository.addAllMovies(allMovies); // Achtung Zeile befüllt DB!!
         //MovieEntity.fromMovies(allMovies);
@@ -243,6 +254,8 @@ public class HomeController implements Initializable {
             return DatabaseManager.getDatabase();
         } catch (DatabaseException e) {
             showErrorPopUp(e.getMessage(), 404);
+           // showWarnPopUp(e.getMessage());
+
         }
         return null;
     }
@@ -253,7 +266,13 @@ public class HomeController implements Initializable {
             movieList = MovieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
         } catch (MovieApiException e) {
             showWarnPopUp(e.getMessage());
-            return MovieEntity.toMovies(movieRepository.getAllMovies());
+            try {
+                return MovieEntity.toMovies(movieRepository.getAllMovies());
+
+            }catch (NullPointerException d){
+                showWarnPopUp("Weder Api noch Db funktioniert, das Programm wird geschlossen");
+                System.exit(0);
+            }
         }
         //movieRepository.addAllMovies(movieList);
         Movie.writeMoviesToFile(movieList);
@@ -279,46 +298,75 @@ public class HomeController implements Initializable {
     public void changeList(MouseEvent mouseEvent) {
         boolean booleanFlag = watchListBtn.getText().equals("See Watchlist");
         if (booleanFlag) {
-            watchListBtn.setText("Back to Home Scene");
 
-            List<WatchlistMovieEntity> watchlist = watchlistRepository.getAllMovies();
+            List<WatchlistMovieEntity> watchlist = null;
+            try {
+                watchlist = watchlistRepository.getAllMovies();
+            } catch (DatabaseException e) {
+                showErrorPopUp(e.getMessage(),-1);
+            } catch (NullPointerException e) {
+                showErrorPopUp("Das Programm wurde ohne Datenbank gestartet. Bitte starten Sie das Programm neu.",-1);
+                return;
+            }
             List<MovieEntity> movieEntityList = new ArrayList<>();
 
             for (WatchlistMovieEntity watchlistMovieEntity : watchlist) {
-                MovieEntity movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
+                MovieEntity movieEntity = null;
+                try {
+                    movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
+                } catch (DatabaseException e) {
+                    showErrorPopUp(e.getMessage(),-1);
+                }
                 movieEntityList.add(movieEntity);
             }
+            watchListBtn.setText("Back to Home Scene");
 
             setFilteredMovies(MovieEntity.toMovies(movieEntityList));
             setVisibilityOfElements(false);
         } else {
-            watchListBtn.setText("See Watchlist");
             setVisibilityOfElements(true);
             setFilteredMovies(allMovies);
+            watchListBtn.setText("See Watchlist");
 
         }
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
 
-    /*private void add_removeFromWatchList(Movie movie) {
+    private void add_removeFromWatchList(Movie movie) {
         if (watchListBtn.getText().equals("See Watchlist")) {
-            addToWatchlist(movie);
+            addToWatchlist.onClick(movie);
         } else {
-            removeFromWatchlist(movie);
+            removeFromWatchlist.onClick(movie);
         }
     }
 
-     */
 
-    private void removeFromWatchlist(Movie movie) {
+
+    private final ClickEventHandler removeFromWatchlist = (clickedItem) ->
+    {
         System.out.println();
-        watchlistRepository.removeFromWatchlist(movie.getId());
-        List<WatchlistMovieEntity> watchlist = watchlistRepository.getAllMovies();
+        Movie movie = (Movie) clickedItem;
+        try {
+            watchlistRepository.removeFromWatchlist(movie.getId());
+        } catch (DatabaseException e) {
+            showErrorPopUp(e.getMessage(),-1);
+        }
+        List<WatchlistMovieEntity> watchlist = null;
+        try {
+            watchlist = watchlistRepository.getAllMovies();
+        } catch (DatabaseException e) {
+            showErrorPopUp(e.getMessage(),-1);
+        }
         List<MovieEntity> movieEntityList = new ArrayList<>();
 
         for (WatchlistMovieEntity watchlistMovieEntity : watchlist) {
-            MovieEntity movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
+            MovieEntity movieEntity = null;
+            try {
+                movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
+            } catch (DatabaseException e) {
+                showErrorPopUp(e.getMessage(),-1);
+            }
             movieEntityList.add(movieEntity);
         }
         setFilteredMovies(MovieEntity.toMovies(movieEntityList));
@@ -327,7 +375,7 @@ public class HomeController implements Initializable {
         observableMovies.addAll(filteredMovies);
 
 
-    }
+    };
 
 
     private final ClickEventHandler addToWatchlist = (clickedItem) ->
@@ -336,8 +384,15 @@ public class HomeController implements Initializable {
         Movie movie = (Movie) clickedItem;
 
        // System.out.println(movieCell.getText());
-        watchlistRepository.addToWatchlist(movie.getId());
+        try {
+            watchlistRepository.addToWatchlist(movie.getId());
+        } catch (DatabaseException e) {
+            showErrorPopUp(e.getMessage(),-1);
+        }  catch (NullPointerException e) {
+            showErrorPopUp("Das Programm wurde ohne Datenbank gestartet. Bitte starten Sie das Programm neu.",-1);
+        }
         System.out.println(movie.getTitle());
+        addToWatchlistClicked = removeFromWatchlist;
 
     };
 
@@ -375,12 +430,13 @@ public class HomeController implements Initializable {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == closeButton) {
-                System.out.println("Programm schließen");
+               // System.out.println("Programm schließen");
                 //This just terminates the program.
                 Platform.exit();
                 System.exit(0);
             } else {
-                System.out.println("Programm ohne Db starten");
+               databaseManager = null;
+                //System.out.println("Programm ohne Db starten");
             }
         });
        // alert.showAndWait();

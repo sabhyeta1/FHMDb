@@ -77,8 +77,8 @@ public class MovieEntity {
         List<Movie> movieListFromFile = null;
         try {
             movieListFromFile = Movie.readMoviesFromFile("Text.txt");
-            throw new IOException();
-           /* for (MovieEntity movieEntity : movieEntities) {
+           // throw new IOException();
+            for (MovieEntity movieEntity : movieEntities) {
 
                 for (int i = 0; i < movieListFromFile.size(); i++) {
                     if (movieEntity.title.equals(movieListFromFile.get(i).getTitle()) && !movieList.contains(movieListFromFile.get(i))) {
@@ -88,7 +88,7 @@ public class MovieEntity {
                 }
             }
 
-            */
+
         } catch (IOException e) {
             for (MovieEntity movieEntity : movieEntities){
               //  movieList.add(new Movie(movieEntity.title, movieEntity.description,Genre.fromString(movieEntity.genres),movieEntity.apiId, movieEntity.releaseYear, movieEntity.imgUrl, movieEntity.lengthInMinutes, movieEntity.rating));

@@ -16,7 +16,6 @@ import java.util.List;
 public class MovieAPI {
     // https://prog2.fh-campuswien.ac.at/movies -> https://prog2.fh-campuswien.ac.at/movies?query=wrgg&genre=ROMANCE&releaseYear=2010&ratingFrom=4' -> ...movies? query,genre,releaseYear und rating Abfrage; url anhängen wenn stimmt
     static OkHttpClient client = new OkHttpClient();
-    static MovieRepository movieRepository = new MovieRepository();
 
     static public List<Movie> run(String url) throws MovieApiException {
         Request request = new Request.Builder()
@@ -28,10 +27,11 @@ public class MovieAPI {
             Gson gson = new Gson();
             Type type = new TypeToken<List<Movie>>(){}.getType();
             assert response.body() != null;
-            throw new MovieApiException("Keine Verbindung zur API");
+
+            //throw new MovieApiException("Keine Verbindung zur API");
 
             //https://stackoverflow.com/questions/20773850/gson-typetoken-with-dynamic-arraylist-item-type
-            //return gson.fromJson(response.body().string(),type);
+           return gson.fromJson(response.body().string(),type);
         } catch (IOException e){
             throw new MovieApiException("Keine Verbindung zur API");
              //  return MovieEntity.toMovies(movieRepository.getAllMovies()) ;

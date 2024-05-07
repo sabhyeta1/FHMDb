@@ -16,7 +16,9 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
     private final Label title = new Label();
     private final Label detail = new Label();
     private final VBox layout = new VBox(title, detail);
-    Button actionButton = new Button("Add/remove");
+    Button actionButton = new Button("add/remove");
+    Button removeButton = new Button("remove");
+
 
     boolean flag = true;
     public MovieCell (ClickEventHandler<Movie> addToWatchlistClicked){
@@ -33,7 +35,24 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
 
             }
+
         });
+       /* removeButton.setOnAction(event -> {
+            if (!isEmpty() && getItem() != null) {
+                Movie movie = getItem();
+                addToWatchlistClicked.onClick(movie);
+
+                removeButton.setVisible(false);
+                addButton.setVisible(true);
+
+
+                // removeFromWatchlistClicked.onClick(movie);
+
+
+            }
+        });
+
+        */
 
     }
     public MovieCell() {
@@ -62,6 +81,7 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
            // button.setBackground(new Background(new BackgroundFill(Color.web(""), null, null)));
             actionButton.setBackground(new Background(new BackgroundFill(Color.web("#f5c518"), null, null)));
 
+           // removeButton.setBackground(new Background(new BackgroundFill(Color.web("#f5c518"), null, null)));
 
 
             VBox textVBox = new VBox();
@@ -70,6 +90,8 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
             // VBox for button
             VBox buttonVBox = new VBox();
             buttonVBox.getChildren().add(actionButton);
+          //  buttonVBox.getChildren().add(removeButton);
+
             buttonVBox.setAlignment(Pos.CENTER_RIGHT);
 
             // HBox to hold both VBox containers
