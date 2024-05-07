@@ -180,7 +180,7 @@ public class HomeController implements Initializable {
         try {
             setFilteredMovies(MovieAPI.filterMovieListByUrl(searchField.getText(), (Genre) genreComboBox.getValue(), (Integer) releaseYearComboBox.getValue(), selectedRating));
         } catch (MovieApiException e) {
-            showErrorPopUp(e.getMessage() + "\nFilterURL funktioniert nicht ohne Internet", -1);
+            showErrorPopUp(e.getMessage() + "\nFilterURL does not work without internet connection", -1);
             return;
         }
 
@@ -270,7 +270,7 @@ public class HomeController implements Initializable {
                 return MovieEntity.toMovies(movieRepository.getAllMovies());
 
             }catch (NullPointerException d){
-                showWarnPopUp("Weder Api noch Db funktioniert, das Programm wird geschlossen");
+                showWarnPopUp("Neither the API nor the database is working, the program will be closed");
                 System.exit(0);
             }
         }
@@ -305,7 +305,7 @@ public class HomeController implements Initializable {
             } catch (DatabaseException e) {
                 showErrorPopUp(e.getMessage(),-1);
             } catch (NullPointerException e) {
-                showErrorPopUp("Das Programm wurde ohne Datenbank gestartet. Bitte starten Sie das Programm neu.",-1);
+                showErrorPopUp("Programme was started without database. Please restart the programme.",-1);
                 return;
             }
             List<MovieEntity> movieEntityList = new ArrayList<>();
@@ -389,7 +389,7 @@ public class HomeController implements Initializable {
         } catch (DatabaseException e) {
             showErrorPopUp(e.getMessage(),-1);
         }  catch (NullPointerException e) {
-            showErrorPopUp("Das Programm wurde ohne Datenbank gestartet. Bitte starten Sie das Programm neu.",-1);
+            showErrorPopUp("Programme was started without database. Please restart the programme.",-1);
         }
         System.out.println(movie.getTitle());
         addToWatchlistClicked = removeFromWatchlist;
@@ -408,8 +408,8 @@ public class HomeController implements Initializable {
     public void showErrorPopUp(String msg, int errorCode) {
         // string msg und vielleicht ein int i mitgeben um zu unterscheiden ansonsten code zu groß
         // Erstellt eine Fehlermeldung(Pop-up)
-        ButtonType closeButton = new ButtonType("Programm schließen");
-        ButtonType startWithoutDbButton = new ButtonType("Programm ohne Db starten");
+        ButtonType closeButton = new ButtonType("Close programme");
+        ButtonType startWithoutDbButton = new ButtonType("Start programme without database");
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);

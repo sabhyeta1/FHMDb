@@ -33,7 +33,7 @@ public class MovieAPI {
             //https://stackoverflow.com/questions/20773850/gson-typetoken-with-dynamic-arraylist-item-type
            return gson.fromJson(response.body().string(),type);
         } catch (IOException e){
-            throw new MovieApiException("Keine Verbindung zur API");
+            throw new MovieApiException("No connection available to the API", e);
              //  return MovieEntity.toMovies(movieRepository.getAllMovies()) ;
         }
     }

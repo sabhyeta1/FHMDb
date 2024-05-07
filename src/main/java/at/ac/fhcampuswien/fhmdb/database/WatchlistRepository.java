@@ -15,7 +15,7 @@ public class WatchlistRepository {
         try {
             this.watchListDao = DatabaseManager.getDatabase().getWatchlistDao();
         } catch (DatabaseException e) {
-            throw new DatabaseException("watchListDao konnte nicht erstellt werden");
+            throw new DatabaseException("watchListDao could not be created");
         }
         this.movieRepository = new MovieRepository(); // Assuming you have a MovieRepository
 
@@ -27,7 +27,7 @@ public class WatchlistRepository {
             for (WatchlistMovieEntity watchlistMovie : watchlist) {
                 if (watchlistMovie.getApiId().equals(apiId)) {
                     // Movie already exists in watchlist, no need to add it again
-                    throw new DatabaseException("Der Eintrag ist in der Tabelle vorhanden");
+                    throw new DatabaseException("Der entry is present in the table");
                     // Indicate that no change was made
                 }
             }
@@ -37,7 +37,7 @@ public class WatchlistRepository {
 
             return watchListDao.create(watchlistMovie);
         } catch (SQLException e) {
-                throw new DatabaseException("Der Eintrag konnte nicht in die Tabelle hinzugefügt werden");
+                throw new DatabaseException("The entry could not be added to the table");
 
         } catch (DatabaseException e) {
             throw new DatabaseException(e.getMessage());
@@ -52,7 +52,7 @@ public class WatchlistRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Fehler beim Entfernen von einem Eintrag was der Watchlist Tabelle");
+            throw new DatabaseException("Error when removing an entry from the watchlist table");
         }
         return 0;
     }
@@ -60,7 +60,7 @@ public class WatchlistRepository {
         try {
             return watchListDao.delete(getAllMovies());
         } catch (DatabaseException | SQLException e) {
-            throw new DatabaseException("Beim Löschen der Tabelle ist ein Fehler aufgetreten");
+            throw new DatabaseException("Error when deleting the table");
         }
     }
     public List<WatchlistMovieEntity> getAllMovies() throws DatabaseException {
@@ -68,7 +68,7 @@ public class WatchlistRepository {
             //System.out.println(movieDao.countOf());
             return watchListDao.queryForAll();
         } catch (SQLException e) {
-            throw new DatabaseException("Fehler beim Selektieren von der ganzen Tabelle eingetreten");
+            throw new DatabaseException("Error when selecting from the whole table");
         }
     }
 }

@@ -33,9 +33,9 @@ public class DatabaseManager {
            watchlistDao =DaoManager.createDao(conn,WatchlistMovieEntity.class);
             createTable();
         }catch (DatabaseException e) {
-            throw new DatabaseException("Bei der Erstellung der Verbindung von der Datenbank und Tabelle ist was schiefgelaufen");
+            throw new DatabaseException("Error when creating connection of the databank and table");
         } catch (SQLException e) {
-            throw new DatabaseException("Bei der Erstellung der Dao Objekte ist was schiefgelaufen");
+            throw new DatabaseException("Error by creating the dao Object");
         }
     }
 
@@ -45,7 +45,7 @@ public class DatabaseManager {
                 instance=new DatabaseManager();
 
             }catch (DatabaseException e){
-                throw new DatabaseException("Kann keine instanz von einer DatabaseManager erstellen");
+                throw new DatabaseException("No instance of DatabaseManager can be created");
             }
         }
         return instance;
@@ -54,7 +54,7 @@ public class DatabaseManager {
         try {
             conn = new JdbcConnectionSource(DB_URL, username,password);
         } catch (SQLException e ) {
-            throw new DatabaseException("Anmeldung zur Datenbank ist fehlgeschlagen",e);
+            throw new DatabaseException("Logging into the databank failed",e);
         }
 
     }
@@ -65,7 +65,7 @@ public class DatabaseManager {
             TableUtils.createTableIfNotExists(conn, MovieEntity.class);
             TableUtils.createTableIfNotExists(conn, WatchlistMovieEntity.class);
         } catch (SQLException e) {
-            throw new DatabaseException("Die Erstellung der Tabelle ist fehlgeschlagen. Schließen Sie ihre Datenbank bevor das Programm starten",e);
+            throw new DatabaseException("Creating of table failed. Close the databank before starting the programme",e);
         }
        // TableUtils.dropTable(conn, WatchlistMovieEntity.class, false);
     }

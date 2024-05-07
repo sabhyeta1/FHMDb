@@ -14,7 +14,7 @@ public class MovieRepository {
         try {
             movieDao=DatabaseManager.getDatabase().getMovieDao();
         } catch (DatabaseException e) {
-            throw new DatabaseException("Es konnte keine Instanz des MovieRepository erstellt werden");
+            throw new DatabaseException("No instances of MovieRepository could be created");
         }
     }
     public int addAllMovies(List<Movie>movieList){
@@ -56,7 +56,7 @@ public class MovieRepository {
 
             return movieDao.create(movieEntity);
         } catch (SQLException e) {
-            throw new DatabaseException("Der Eintrag konnte nicht in die Tabelle hinzugefügt werden");
+            throw new DatabaseException("The entry could not be added to the table");
         } catch (DatabaseException e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -112,7 +112,7 @@ public class MovieRepository {
             }
         } catch (SQLException e) {
            // throw new RuntimeException();
-            throw new DatabaseException("Eintrag wurde nicht in der Tabelle gefunden");
+            throw new DatabaseException("Entry could not be found in the table");
         }
     }
 }
