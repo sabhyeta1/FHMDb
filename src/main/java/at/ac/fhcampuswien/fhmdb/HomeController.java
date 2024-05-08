@@ -269,7 +269,7 @@ public class HomeController implements Initializable {
             try {
                 return MovieEntity.toMovies(movieRepository.getAllMovies());
 
-            }catch (NullPointerException d){
+            }catch (NullPointerException | DatabaseException d){
                 showWarnPopUp("Neither the API nor the database is working, the program will be closed");
                 System.exit(0);
             }

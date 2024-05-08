@@ -17,7 +17,7 @@ public class MovieRepository {
             throw new DatabaseException("No instances of MovieRepository could be created");
         }
     }
-    public int addAllMovies(List<Movie>movieList){
+    public int addAllMovies(List<Movie>movieList) throws DatabaseException {
 
         try {
             List<MovieEntity>movieEntities = getAllMovies();
@@ -36,7 +36,7 @@ public class MovieRepository {
             }
             movieDao.create(MovieEntity.fromMovies(movieList));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("The entry can't be created");
         }
 
         return 1;
@@ -62,7 +62,7 @@ public class MovieRepository {
         }
     }
 
-    public int removeFromMovieList(String apiId) {
+    public int removeFromMovieList(String apiId) throws DatabaseException {
         try {
             for (MovieEntity movieEntity : movieDao) {
                 if (movieEntity.apiId.equals(apiId)) {
@@ -70,24 +70,26 @@ public class MovieRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Entry couldn't be found to delete");
         }
         return 0;
     }
-     public int removeAll(){
+     public int removeAll() throws DatabaseException {
 
         try {
            return movieDao.delete(getAllMovies());
+        } catch (DatabaseException e) {
+            throw new DatabaseException(e.getMessage());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Entry couldn't be deleted");
         }
-    }
-     public List<MovieEntity> getAllMovies(){
+     }
+     public List<MovieEntity> getAllMovies() throws DatabaseException {
         try {
             //System.out.println(movieDao.countOf());
             return movieDao.queryForAll();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Unbable to colect all Entries");
         }
     }
     public void getFirstEntry(){
@@ -112,7 +114,7 @@ public class MovieRepository {
             }
         } catch (SQLException e) {
            // throw new RuntimeException();
-            throw new DatabaseException("Entry could not be found in the table");
+            throw new DatabaseException("The Entry could not be found in the table");
         }
     }
 }
