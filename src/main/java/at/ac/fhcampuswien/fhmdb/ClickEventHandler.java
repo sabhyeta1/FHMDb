@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+@FunctionalInterface
 public interface ClickEventHandler<T> {
-    abstract void onClick(T t);
+     void onClick(T t);
 }

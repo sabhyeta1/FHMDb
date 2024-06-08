@@ -28,8 +28,6 @@ public class MovieAPI {
             Type type = new TypeToken<List<Movie>>(){}.getType();
             assert response.body() != null;
 
-            //throw new MovieApiException("Keine Verbindung zur API");
-
             //https://stackoverflow.com/questions/20773850/gson-typetoken-with-dynamic-arraylist-item-type
            return gson.fromJson(response.body().string(),type);
         } catch (IOException e){
@@ -37,32 +35,5 @@ public class MovieAPI {
              //  return MovieEntity.toMovies(movieRepository.getAllMovies()) ;
         }
     }
-    public static List<Movie> filterMovieListByUrl(String searchText, Genre selectedGenre, Integer selectedReleaseYear, Double selectedRating) throws MovieApiException {
-        StringBuilder stb = new StringBuilder("https://prog2.fh-campuswien.ac.at/movies?");
-
-        if (searchText.isBlank()) {
-            // searchText = "";
-
-        } else stb.append("&query=").append(searchText);
-
-
-        if (selectedGenre == null) {
-            // selectedGenre = Genre.NONE;
-
-        } else  stb.append("&genre=").append(selectedGenre);
-
-        if (selectedReleaseYear == null) {
-            //selectedReleaseYear = -1;
-
-
-        } else stb.append("&releaseYear=").append(selectedReleaseYear);
-
-        if (selectedRating == -1.0){
-
-        } else  stb.append("&ratingFrom=").append(selectedRating);
-
-        return MovieAPI.run(stb.toString());
-    }
-
 
 }

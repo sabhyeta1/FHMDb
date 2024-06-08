@@ -235,6 +235,7 @@ public class Movie implements Serializable {
         if (file.exists() && file.length() > 0){
             try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
                  ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+
                 objectOutputStream.writeObject(movies);
                 System.out.println("Movies have been written to " + filename);
             } catch (IOException e) {

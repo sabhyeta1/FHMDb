@@ -1,9 +1,15 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.State.AscendingState;
+import at.ac.fhcampuswien.fhmdb.State.DescendingState;
+import at.ac.fhcampuswien.fhmdb.State.State;
+import at.ac.fhcampuswien.fhmdb.State.UnsortedState;
 import at.ac.fhcampuswien.fhmdb.database.*;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.MovieAPI;
+import at.ac.fhcampuswien.fhmdb.models.UrlBuilder;
+import at.ac.fhcampuswien.fhmdb.observerPattern.Observer;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,17 +27,16 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.text.BreakIterator;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class HomeController implements Initializable {
+public class HomeController implements Initializable, Observer {
     //TODO add/remove Button richtig implementiren exception handling weiter ausbreiten add/remove dao  UI FEEDBACK
-    boolean booleanFlag = false;
-    public JFXComboBox releaseYearComboBox;
-    public JFXComboBox ratingComboBox;
+    private boolean booleanFlag = false;
+    public JFXComboBox<Integer> releaseYearComboBox;
+    public JFXComboBox<Integer> ratingComboBox;
     public JFXButton searchBtnByUrl;
 
     @FXML
@@ -41,61 +46,59 @@ public class HomeController implements Initializable {
     public TextField searchField;
 
     @FXML
-    public JFXListView movieListView;
+    public JFXListView<Movie> movieListView;
 
     @FXML
-    public JFXComboBox genreComboBox;
+    public JFXComboBox<Genre> genreComboBox;
 
     @FXML
     public JFXButton sortBtn;
     public Button watchListBtn;
 
-    public List<Movie> filteredMovies = new ArrayList<>();
-    public List<Movie> watchListMovies = new ArrayList<>();
-    DatabaseManager databaseManager = getDatabaseManager();
+    private List<Movie> watchListMovies = new ArrayList<>();
+    private DatabaseManager databaseManager;
 
-    MovieRepository movieRepository = getMovieRepository();
+    private MovieRepository movieRepository;
+    private WatchlistRepository watchlistRepository;
+    public List<Movie> allMovies;
+    private List<Movie> filteredMovies = allMovies;
+
+    private State state;
+
+
 
     private MovieRepository getMovieRepository() {
         try {
-            return new MovieRepository();
+            return  MovieRepository.getInstance();
         } catch (DatabaseException e) {
-            showErrorPopUp(e.getMessage(),-1);
+            showErrorPopUp(e.getMessage(), -1);
         }
         return null;
     }
 
-    WatchlistRepository watchlistRepository = getWatchListRepository();
 
     private WatchlistRepository getWatchListRepository() {
         try {
-            return new WatchlistRepository();
+            return WatchlistRepository.getInstance();
         } catch (DatabaseException e) {
             showWarnPopUp(e.getMessage());
         }
         return null;
     }
 
-    // Dao<MovieEntity,Long> movieDao = databaseManager.getMovieDao() ;
-    //try für moviapi erweitern damit falls api versagt(internet kackt ab) die Db für die filme zuständig ist
-    public List<Movie> allMovies = getData();
-
-    private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
+    private ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
     private ClickEventHandler clickEventHandler;
-    ClickEventHandler<Movie> addToWatchlistClicked;
+    private ClickEventHandler<Movie> addToWatchlistClicked;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // databaseManager.testDB();
-
+        databaseManager = getDatabaseManager();
+        movieRepository = getMovieRepository();
+        state = new State();
+        allMovies = getData();
+        watchlistRepository = getWatchListRepository();
+        watchlistRepository.addObserver(this);
         ClickEventHandler<Movie> addToWatchlistClicked = this::add_removeFromWatchList;
-       //ClickEventHandler<Movie> removeFromWatchlistClicked = removeFromWatchlist;
-
-        //movieRepository.addAllMovies(allMovies); // Achtung Zeile befüllt DB!!
-        //MovieEntity.fromMovies(allMovies);
-        /*movieRepository.addAllMovies(allMovies);*/
-
-
         observableMovies.addAll(allMovies);         // add dummy data to observable list
         // initialize UI stuff
         movieListView.setItems(observableMovies);   // set data of observable list to list view
@@ -113,22 +116,21 @@ public class HomeController implements Initializable {
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if (sortBtn.getText().equals("Sort (asc)")) {
-                // TODO sort observableMovies ascending
+            observableMovies.clear();
+            filteredMovies = sortByTitle(getFilteredMovies());
+            setFilteredMovies(filteredMovies);
+           observableMovies.addAll(getFilteredMovies());
 
-                observableMovies.clear();
-                observableMovies.addAll(Movie.sortListAlphabetically(getFilteredMovies(), true));
-                sortBtn.setText("Sort (desc)");
-            } else {
-                // TODO sort observableMovies descending
-
-                observableMovies.clear();
-                observableMovies.addAll(Movie.sortListAlphabetically(getFilteredMovies(), false));
-                sortBtn.setText("Sort (asc)");
-            }
         });
 
 
+    }
+
+    public List<Movie> sortByTitle(List<Movie> movies){
+        List<Movie>sortedMovies = state.sort(movies);
+        state.setCurrentState(state.getCurrentState().getNextState());
+        sortBtn.setText(state.getCurrentState().getText());
+        return sortedMovies;
     }
 
 
@@ -165,31 +167,24 @@ public class HomeController implements Initializable {
         movieListView.setItems(observableMovies);
     }
 
-    public void filterMovieListByUrl() {
-
-        double selectedRating;
-
-        try {
-            selectedRating = (int) ratingComboBox.getValue();
-
-        } catch (NullPointerException e) {
-            selectedRating = -1.0;
-
-        }
+    public void filterByAPI() {
+        int rating = ratingComboBox.getSelectionModel().isEmpty() ? 0 : ratingComboBox.getSelectionModel().getSelectedItem();
+        int releaseYear = releaseYearComboBox.getSelectionModel().isEmpty() ? 0 : releaseYearComboBox.getSelectionModel().getSelectedItem();
+        String query = searchField.getText().isBlank() ? null : searchField.getText();
+        Genre genre = genreComboBox.getSelectionModel().isEmpty() ? null : genreComboBox.getSelectionModel().getSelectedItem();
+        UrlBuilder urlBuilder = new UrlBuilder();
 
         try {
-            setFilteredMovies(MovieAPI.filterMovieListByUrl(searchField.getText(), (Genre) genreComboBox.getValue(), (Integer) releaseYearComboBox.getValue(), selectedRating));
+            setFilteredMovies(MovieAPI.run(urlBuilder.setGenre(genre).setQuery(query).setRating(rating).setReleaseYear(releaseYear).build()));
         } catch (MovieApiException e) {
             showErrorPopUp(e.getMessage() + "\nFilterURL does not work without internet connection", -1);
             return;
         }
 
+        // Make this a function
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
 
-        // initialize UI stuff
-        movieListView.setItems(null);
-        movieListView.setItems(observableMovies);
 
         genreComboBox.getSelectionModel().clearSelection();
         releaseYearComboBox.getSelectionModel().clearSelection();
@@ -254,7 +249,7 @@ public class HomeController implements Initializable {
             return DatabaseManager.getDatabase();
         } catch (DatabaseException e) {
             showErrorPopUp(e.getMessage(), 404);
-           // showWarnPopUp(e.getMessage());
+            // showWarnPopUp(e.getMessage());
 
         }
         return null;
@@ -262,28 +257,38 @@ public class HomeController implements Initializable {
 
     public List<Movie> getData() {
         List<Movie> movieList = null;
+
+
         try {
+
             movieList = MovieAPI.run("https://prog2.fh-campuswien.ac.at/movies");
+            //movieRepository = new MovieRepository();
+            movieRepository.removeAll();
+            movieRepository.addAllMovies(movieList);
+            // movieRepository.removeAll();
+
         } catch (MovieApiException e) {
             showWarnPopUp(e.getMessage());
             try {
                 return MovieEntity.toMovies(movieRepository.getAllMovies());
 
-            }catch (NullPointerException | DatabaseException d){
+            } catch (NullPointerException | DatabaseException d) {
                 showWarnPopUp("Neither the API nor the database is working, the program will be closed");
                 System.exit(0);
             }
+        } catch (DatabaseException | ConcurrentModificationException e) {
+            //throw new RuntimeException(e);
         }
         //movieRepository.addAllMovies(movieList);
         Movie.writeMoviesToFile(movieList);
         setFilteredMovies(movieList);
-        return movieList;
 
-            /* Idee: try {
-            } catch (MovieApiException e){}
+        //unsorted State changes to Asc
+        state.sort(movieList);
+        state.setCurrentState(state.getCurrentState().getNextState());
+        return  movieList;
 
-            */
-        // return MovieEntity.toMovies(movieRepository.getAllMovies());
+
 
     }
 
@@ -303,9 +308,9 @@ public class HomeController implements Initializable {
             try {
                 watchlist = watchlistRepository.getAllMovies();
             } catch (DatabaseException e) {
-                showErrorPopUp(e.getMessage(),-1);
+                showErrorPopUp(e.getMessage(), -1);
             } catch (NullPointerException e) {
-                showErrorPopUp("Programme was started without database. Please restart the programme.",-1);
+                showErrorPopUp("Programme was started without database. Please restart the programme.", -1);
                 return;
             }
             List<MovieEntity> movieEntityList = new ArrayList<>();
@@ -315,7 +320,7 @@ public class HomeController implements Initializable {
                 try {
                     movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
                 } catch (DatabaseException e) {
-                    showErrorPopUp(e.getMessage(),-1);
+                    showErrorPopUp(e.getMessage(), -1);
                 }
                 movieEntityList.add(movieEntity);
             }
@@ -342,7 +347,6 @@ public class HomeController implements Initializable {
     }
 
 
-
     private final ClickEventHandler removeFromWatchlist = (clickedItem) ->
     {
         System.out.println();
@@ -350,13 +354,13 @@ public class HomeController implements Initializable {
         try {
             watchlistRepository.removeFromWatchlist(movie.getId());
         } catch (DatabaseException e) {
-            showErrorPopUp(e.getMessage(),-1);
+            showErrorPopUp(e.getMessage(), -1);
         }
         List<WatchlistMovieEntity> watchlist = null;
         try {
             watchlist = watchlistRepository.getAllMovies();
         } catch (DatabaseException e) {
-            showErrorPopUp(e.getMessage(),-1);
+            showErrorPopUp(e.getMessage(), -1);
         }
         List<MovieEntity> movieEntityList = new ArrayList<>();
 
@@ -365,7 +369,7 @@ public class HomeController implements Initializable {
             try {
                 movieEntity = movieRepository.getMovieEntityByApiId(watchlistMovieEntity.getApiId());
             } catch (DatabaseException e) {
-                showErrorPopUp(e.getMessage(),-1);
+                showErrorPopUp(e.getMessage(), -1);
             }
             movieEntityList.add(movieEntity);
         }
@@ -383,13 +387,13 @@ public class HomeController implements Initializable {
         // add code to add movie to watchlist here
         Movie movie = (Movie) clickedItem;
 
-       // System.out.println(movieCell.getText());
+        // System.out.println(movieCell.getText());
         try {
-            watchlistRepository.addToWatchlist(movie.getId());
+            watchlistRepository.addToWatchlist(new WatchlistMovieEntity(movie.getId()));
         } catch (DatabaseException e) {
-            showErrorPopUp(e.getMessage(),-1);
-        }  catch (NullPointerException e) {
-            showErrorPopUp("Programme was started without database. Please restart the programme.",-1);
+            showErrorPopUp(e.getMessage(), -1);
+        } catch (NullPointerException e) {
+            showErrorPopUp("Programme was started without database. Please restart the programme.", -1);
         }
         System.out.println(movie.getTitle());
         addToWatchlistClicked = removeFromWatchlist;
@@ -430,16 +434,16 @@ public class HomeController implements Initializable {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == closeButton) {
-               // System.out.println("Programm schließen");
+                // System.out.println("Programm schließen");
                 //This just terminates the program.
                 Platform.exit();
                 System.exit(0);
             } else {
-               databaseManager = null;
+                databaseManager = null;
                 //System.out.println("Programm ohne Db starten");
             }
         });
-       // alert.showAndWait();
+        // alert.showAndWait();
     }
 
     public void showWarnPopUp(String msg) {
@@ -449,12 +453,17 @@ public class HomeController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(null);
-        alert.setContentText("Warning Message: "+msg);
+        alert.setContentText("Warning Message: " + msg);
 
         // Zeigt die Warnmeldung an und wartet auf eine Benutzerinteraktion
         alert.showAndWait();
 
 
+    }
+
+    @Override
+    public void update(String message) {
+        showWarnPopUp(message);
     }
 
 /*private final ClickEventHandler<Movie> onAddToWatchlistClicked = (clickedItem) -> {
